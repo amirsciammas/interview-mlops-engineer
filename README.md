@@ -19,9 +19,9 @@ You should create 1 endpoint that accepts relevant input and returns the inferne
 - [ ] You should provide clear documentation of the API, you can use Swagger or any other format.
 - [ ] README file should include clear instructions on how to deploy / start the application.
 - [ ] No crashes or bugs.
-- [ ] Code is easily understood and communicative (eg. comments, variable names, etc). 
+- [ ] Code is easily understood and communicative (eg. comments, variable names, etc).
 - [ ] Everything that you decide to not do due to the limitation of time should be documented in the README.
-- [ ] GitHub commit history is consistent, easy to follow and understand. 
+- [ ] GitHub commit history is consistent, easy to follow and understand.
 
 -----
 
@@ -260,3 +260,66 @@ if __name__ == "__main__":
 # Log
 INFO-2022-04-26 20:17:00,644: Input: [10] Prediction: [[30.99669]]
 ```
+
+### Improving Quality
+
+We have more modular code but we can improve the quality of it by adding code and docstring linting and formatting. We could do it manually but [pre-commit](https://pre-commit.com/) can handle it automatically for us with a simple configuration.
+
+Lets create a development requirements file, `requirements_dev.txt` and add `pre-commit` to it and install it.
+
+```bash
+pip install -r requirements_dev.txt
+```
+
+And create a configuration file `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: requirements-txt-fixer
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-merge-conflict
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.6.4
+    hooks:
+    -   id: isort
+        args:
+          - --multi-line=3
+          - --trailing-comma
+          - --force-grid-wrap=0
+          - --use-parentheses
+          - --line-width=88
+-   repo: https://github.com/psf/black
+    rev: 20.8b0
+    hooks:
+    -   id: black
+-   repo: https://gitlab.com/PyCQA/flake8
+    rev: 3.8.3
+    hooks:
+    -   id: flake8
+-   repo: https://github.com/terrencepreilly/darglint
+    rev: v1.8.1
+    hooks:
+    -   id: darglint
+        args:
+          - -v 2
+```
+
+This are the hooks we are going to use in every commit, `flake8` and `darglint` for linting, `black` and `isort` for formatting. The lets install the hooks:
+
+```bash
+pre-commit install
+```
+
+And lets run all the files:
+
+```bash
+pre-commit run --all-files
+```
+
+This will execute all the linting and formatting in all the files. From now on, every file modified will automatically pass this quality when trying to commit it.
+
+![pre-commit](img/pre-commit-example.png)
