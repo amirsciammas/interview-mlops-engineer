@@ -1,0 +1,4 @@
+training:
+  units: 1
+  optimizer: "sgd"
+  epochs: 500
