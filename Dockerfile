@@ -7,7 +7,8 @@ RUN pip install -r requirements.txt
 # Copy necessary files
 COPY app.py .
 COPY model.py .
-COPY models/my_best_model.h5 models/
+RUN mkdir models
+COPY tracked_models/my_best_model.h5 models
 
 # Set the entrypoint
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
