@@ -1,0 +1,13 @@
+stages:
+  training:
+    cmd: python train_model.py
+    deps:
+    - dataset.csv
+    - model.py
+    - train_model.py
+    params:
+    - training.epochs
+    - training.optimizer
+    - training.units
+    outs:
+    - models
