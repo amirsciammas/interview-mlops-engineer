@@ -1,4 +1,6 @@
 stages:
+  pull_data:
+    cmd: dvc pull
   training:
     cmd: python train_model.py
     deps:
@@ -11,3 +13,5 @@ stages:
     - training.units
     outs:
     - models
+  track_model:
+    cmd: sh ./track_model.sh
