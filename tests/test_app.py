@@ -42,7 +42,8 @@ def test_predict_post_batch(app_client: TestClient):
     response_data = response.json()["predictions"]
     for respose_item, gt_item in zip(response_data, ground_truth_data):
         assert pytest.approx(respose_item, 0.001) == gt_item
-        
+
+@pytest.mark.xfail                
 def test_predict_post_docker():
     """
     Makes sure the API and the POST method for making predictions
@@ -65,7 +66,8 @@ def test_predict_post_docker():
     response_data = response.json()["predictions"]
     for respose_item, gt_item in zip(response_data, ground_truth_data):
         assert pytest.approx(respose_item, 0.001) == gt_item
-        
+
+@pytest.mark.xfail        
 def test_predict_post_batch_docker():
     """
     Makes sure the API and the POST method for making predictions
