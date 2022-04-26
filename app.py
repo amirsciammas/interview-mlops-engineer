@@ -13,6 +13,7 @@ app = FastAPI()
 model = MyModel()
 model.from_pretrained("my_best_model.h5")
 
+
 @app.post("/")
 def predict(batch: Dict[str, List[float]]) -> Dict[str, List[List[float]]]:
     """Prediction API POST Method.
@@ -23,9 +24,8 @@ def predict(batch: Dict[str, List[float]]) -> Dict[str, List[List[float]]]:
     Returns:
         Dict[str, List[List[float]]]: The predicted batch.
     """
-    
+
     batch_data = batch["values"]
     predictions = model.make_prediction(batch_data)
     predictions = {"predictions": predictions.tolist()}
     return predictions
-    
