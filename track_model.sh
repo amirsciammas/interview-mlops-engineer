@@ -4,7 +4,7 @@ cp models/my_best_model.h5 tracked_models/my_best_model.h5
 echo "Send model to tracking directory"
 
 dvc add tracked_models/my_best_model.h5
-git add tracked_models/my_best_model.h5.dvc .gitignore
+git add tracked_models/my_best_model.h5.dvc
 git commit -m "Trained model tracked with DVC"
 echo "Tracking trained model!"
 

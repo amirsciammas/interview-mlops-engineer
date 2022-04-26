@@ -15,3 +15,7 @@ stages:
     - models
   track_model:
     cmd: sh ./track_model.sh
+  build_container:
+    cmd: docker build . -t adidas_model_api:latest
+  serve_model:
+    cmd: docker run -it -p 9000:8000 --name model_api adidas_model_api:latest
