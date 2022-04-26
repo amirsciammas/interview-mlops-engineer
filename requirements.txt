@@ -1,0 +1,5 @@
+fastapi==0.75.2
+uvicorn==0.17.6
+pandas==1.4.2
+pytest==7.1.2
+tensorflow==2.8.0
