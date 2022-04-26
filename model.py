@@ -10,11 +10,15 @@ class MyModel:
     """
     A class that contains all the logic pertaining the model"""
 
-    def __init__(self):
-        """Constructor"""
+    def __init__(self, num_units: Optional[int] = 1):
+        """Constructor
+        
+        Args:
+            num_units (int, Optional): Number of neurons in the layer.
+        """
 
         self._model_arch = tf.keras.Sequential(
-            [tf.keras.layers.Dense(units=1, input_shape=[1])]
+            [tf.keras.layers.Dense(units=num_units, input_shape=[1])]
         )
         self._model = None
 
@@ -41,6 +45,7 @@ class MyModel:
         features: np.array,
         labels: np.array,
         output_model_path: str,
+        optimizer: Optional[str] = "sgd",
         epochs: Optional[int] = 500,
     ):
         """Trains the model with the given features-labels.
@@ -51,10 +56,11 @@ class MyModel:
             features (np.array): Input features.
             labels (np.array): Labels.
             output_model_path (str): Path/to the saved trained model.
+            optimizer (str, Optiona): Optimizer to use.
             epochs (int, Optional): The number of epochs to train.
         """
 
-        self._model_arch.compile(optimizer="sgd", loss="mean_squared_error")
+        self._model_arch.compile(optimizer=optimizer, loss="mean_squared_error")
         self._model_arch.fit(features, labels, epochs=epochs)
         self._model_arch.save(output_model_path)
 
