@@ -11,7 +11,7 @@ app = FastAPI()
 
 # Load the model from the trained checkpoint
 model = MyModel()
-model.from_pretrained("models/my_best_model.h5")
+model.from_pretrained("tracked_models/my_best_model.h5")
 
 
 @app.post("/")
