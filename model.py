@@ -36,7 +36,13 @@ class MyModel:
 
         self._model.summary()
 
-    def train(self, features: np.array, labels: np.array, epochs: Optional[int] = 500):
+    def train(
+        self,
+        features: np.array,
+        labels: np.array,
+        output_model_path: str,
+        epochs: Optional[int] = 500,
+    ):
         """Trains the model with the given features-labels.
 
         The model is automatically saved in H5 format.
@@ -44,12 +50,13 @@ class MyModel:
         Args:
             features (np.array): Input features.
             labels (np.array): Labels.
+            output_model_path (str): Path/to the saved trained model.
             epochs (int, Optional): The number of epochs to train.
         """
 
         self._model_arch.compile(optimizer="sgd", loss="mean_squared_error")
         self._model_arch.fit(features, labels, epochs=epochs)
-        self._model_arch.save("my_best_model.h5")
+        self._model_arch.save(output_model_path)
 
     def make_prediction(self, batch: List[float]) -> List[float]:
         """Inference over a batch of data.
