@@ -1,6 +1,6 @@
 stages:
   pull_data:
-    cmd: dvc pull
+    cmd: dvc pull dataset.csv.dvc
   training:
     cmd: python train_model.py
     deps:
