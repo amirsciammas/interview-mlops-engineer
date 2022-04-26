@@ -20,7 +20,7 @@ if __name__ == "__main__":
     model.train(
         features=features,
         labels=labels,
-        output_model_path="my_best_model.h5",
+        output_model_path="models/my_best_model.h5",
         optimizer=params["optimizer"],
         epochs=params["epochs"]
     )
