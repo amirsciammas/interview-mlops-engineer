@@ -1,6 +1,7 @@
 """A simple script for launching a model training"""
 
 import yaml
+import os
 
 import pandas as pd
 
@@ -16,6 +17,9 @@ if __name__ == "__main__":
     features = data["x"].to_numpy()
     labels = data["y"].to_numpy()
     
+    if not os.path.exists("models"):
+        os.mkdir("models")
+        
     model = MyModel(num_units=params["units"])
     model.train(
         features=features,
