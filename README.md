@@ -389,7 +389,7 @@ When creating the API we have to consider a couple of things:
 * Shape of the input data
 * What do we need to log?
 
-For the first question we should not load the model for each prediction as it will result in slow predictions so we should load when the applciation starts and keep it cached. For this FastAPI has [Events](https://fastapi.tiangolo.com/advanced/events/) that can be configured to be performed before the application fully loads so this will be handy in dealing  with the model caching and improve the performance as the model is already in memory for each prediction.
+For the first question we should not load the model for each prediction as it will result in slow predictions so we should load when the applciation starts and keep it cached. With FastAPI whe can perform the loading of the model before the application fully loads so this will be handy in dealing  with the model caching and improve the performance as the model is already in memory for each prediction.
 
 FastAPI is based on [Pydantic](https://pydantic-docs.helpmanual.io/) this allows for good performance in serialization and deserialization, also it performs the data validation for us so if a prediction does not have the desired schema a 422 HTTP Error will be thrown.
 
@@ -426,3 +426,52 @@ We can see that the application has started and if we go to the web browser to `
 Also we can go to `http://127.0.0.1:8000/docs` where an automatic OpenAPI is shown and we can test our endpoint from there:
 
 ![openapi](img/openapi.png)
+
+We have our endpoint working, lets try to load a model before the application starts and make a prediction:
+
+```python
+from typing import List
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+from src.predict import load_keras_model, predict
+
+class InputData(BaseModel):
+    data: List[int]
+
+class ResponseData(BaseModel):
+    prediction: float
+
+model = load_keras_model("my_best_model.h5")
+
+app = FastAPI()
+
+@app.post("/predict", status_code=200, response_model=ResponseData)
+def predict_model(data: InputData):
+
+    return ResponseData(prediction=predict(data.data, model).item(0))
+```
+
+Lets unpack what happening here:
+
+* We created `InputData` this class uses `pydantic` to create the schema using python typing, this will be how we spect the data to come, we will have a field `data` with a list of integers in it. If the request does not follows this schemas a validation error will be raised. This will be an  argument in our endpoint function that its expected to cme in the body of the request.
+
+```json
+{
+    "data": [10]
+}
+```
+
+* A `ResponseData` that acts as our response schema that will return a response as the following:
+
+```json
+{
+    "prediction": 30.012
+}
+```
+
+* Now its when creating the `predict.py` comes in handy as we can reuse the code to load the model. This instance is shared across the application and fully cached in memory to reduce prediction times.
+
+* And finally we change the endpoint to a POST so it can accept a body and make the prediction using the previous developed function at `predict.py`.
+
+Now lets clean a bit the code and add a bit of documentation and add some tests.
