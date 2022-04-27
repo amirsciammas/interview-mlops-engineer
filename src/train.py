@@ -1,13 +1,13 @@
 import logging
 
-import tensorflow as tf
-from tensorflow.keras.models import load_model
 import numpy as np
+import tensorflow as tf
 from tensorflow import keras
 
 logger = logging.getLogger("training")
-FORMAT = '%(levelname)s-%(asctime)s: %(message)s'
+FORMAT = "%(levelname)s-%(asctime)s: %(message)s"
 logging.basicConfig(format=FORMAT, level=logging.INFO)
+
 
 def get_data():
 
@@ -20,18 +20,21 @@ def get_data():
     return xs, ys
 
 
-def train_model(X, y, optimizer='sgd', loss='mean_squared_error'):
+def train_model(X, y, optimizer="sgd", loss="mean_squared_error"):
 
     """
     Function to train a Tensorflow model using Keras API
 
     Args:
+        X: training data
+        y: labels for the training data
         optimizer: optimizer to use in training
         loss: loss to measure the performance of the model
 
     Returns:
         A trained model.
     """
+
     # Define and compile the neural network
     logger.info("Creating neural network")
     model = tf.keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
@@ -43,10 +46,20 @@ def train_model(X, y, optimizer='sgd', loss='mean_squared_error'):
 
     return model
 
+
 def save_model(model, name):
+
+    """
+    Function to save a Tensorflow model using Keras API
+
+    Args:
+        model: fitted model instance
+        name: name used to save the model
+    """
     # Save model into file
-    model.save(f'{name}.h5')
+    model.save(f"{name}.h5")
     logger.info(f"Model saved as: {name}.h5")
+
 
 if __name__ == "__main__":
     X, y = get_data()
