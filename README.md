@@ -474,4 +474,4 @@ Lets unpack what happening here:
 
 * And finally we change the endpoint to a POST so it can accept a body and make the prediction using the previous developed function at `predict.py`.
 
-Now lets clean a bit the code and add a bit of documentation and add some tests.
+Now lets clean a bit the code and add a bit of documentation, add some tests and create a configuration file for the app.

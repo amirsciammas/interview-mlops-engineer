@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 
+from src.config import settings
 from src.predict import load_keras_model, predict
 from src.schemas import InputData, ResponseData
 
 # Load model into the application
-model = load_keras_model("my_best_modelf.h5")
+model = load_keras_model(settings.MODEL_PATH)
 
 description = """
 API to make predictions using a Tensorflow model! 🚀
