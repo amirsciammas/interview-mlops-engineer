@@ -10,7 +10,7 @@ You should create 1 endpoint that accepts relevant input and returns the inferne
 
 ### **How to share your results?**
 - [X] Clone this repository and create your own branch to work on.
-- [ ] .... develop .....
+- [X] .... develop .....
 - [ ] Once you are ready, create a pull request with your code.
 
 
@@ -323,3 +323,106 @@ pre-commit run --all-files
 This will execute all the linting and formatting in all the files. From now on, every file modified will automatically pass this quality when trying to commit it.
 
 ![pre-commit](img/pre-commit-example.png)
+
+Now lets fix all the errors and add all the hooks to the `requirements_dev.txt` so we can used the tools indepently of having to commit a file. Also as we need this to develop we can add `requirements_model.txt` as a dependency soo by installing `requirements_dev.txt` we also install the dependencies needed for the project.
+
+```
+-r requirements_model.txt
+pre-commit==2.18.1
+isort==5.6.4
+black==20.8b0
+flake8==3.8.3
+darglint==1.8.1
+
+# Now executing this will install both requirements:
+pip install -r requirements_dev.txt
+```
+
+We have better quality but code changes might break the training and prediction scripts so to make sure lets add tests for the training and prediction.
+
+### Adding tests
+
+To make sure that further changes to the code don't break it we are going to add tests for both scripts. For this we install `pytest`, add it to `requirements_dev.txt`, create an empty `conftest.py` and a `tests` folder.
+
+Then we will create two scripts one for `train.py` as `test_train.py` and one for `predict.py` as `test_predict.py`.
+
+An example for the `get_data` function at `train.py`:
+
+```python
+import numpy as np
+
+from src import train
+
+def test_get_data():
+
+    """
+    This should test the `get_data` function returns an a tuple with numpy arrays
+    """
+
+    result = train.get_data()
+    X, y = result
+
+    assert isinstance(result, tuple)
+    assert isinstance(X, np.ndarray)
+    assert isinstance(y, np.ndarray)
+
+```
+
+Because we made a module the scripts are easy to import and test that they are working properly. Now we add the test for the remaining functions. Some functions perform a simple action likea loading a model so the tests we are going to add are simple but for more complex code this would test that any of the logic inside the function continues to work.
+
+Now that the are some tests we can execute them with the command `pytest`:
+
+![tests](img/tests.png)
+
+Now we have improved our code a bit so lets start with the Rest API to perform predictions.
+
+### Creating the Rest API
+
+For this we have to select a framework in this case [FastAPI](https://fastapi.tiangolo.com/) is my choice to develop the Rest API as I fell more confortable with it but que could have choosen `Flask` or `Django-REST`. FastAPi have some advantages like data validation out of the box, OpenAPI support or good performance.
+
+To keep everything in order lets create an `app.py` file where all the logic of the API is going to be developed.
+
+
+When creating the API we have to consider a couple of things:
+
+* When will be the model loaded?
+* Shape of the input data
+* What do we need to log?
+
+For the first question we should not load the model for each prediction as it will result in slow predictions so we should load when the applciation starts and keep it cached. For this FastAPI has [Events](https://fastapi.tiangolo.com/advanced/events/) that can be configured to be performed before the application fully loads so this will be handy in dealing  with the model caching and improve the performance as the model is already in memory for each prediction.
+
+FastAPI is based on [Pydantic](https://pydantic-docs.helpmanual.io/) this allows for good performance in serialization and deserialization, also it performs the data validation for us so if a prediction does not have the desired schema a 422 HTTP Error will be thrown.
+
+It is of interest to log the input data and the output predictions, this will allow as to measure our model performance in the long run. This oculd be directly logged into the stdout or a file for our purpuose it will be logged into stdout.
+
+As we selected FastAPI we need to install it and add it into our `requirements_model.txt`.
+
+Lets create a simple app:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/predict", status_code=200)
+def predict():
+    return {"data": 30}
+```
+
+We have a single `predict` endpoint thath when requested always returns a dummy prediction. Lets run it, we could use the basic FastAPI application startup but lets improve it by using `uvicorn` as it is production ready.
+
+```bash
+# Install uvicorn and add it to the requirements
+pip install uvicorn==0.17.6
+
+# Run the application
+uvicorn --reload src.app:app
+```
+
+We can see that the application has started and if we go to the web browser to `http://127.0.0.1:8000/predict` we can see the result:
+
+![dummy_predict](img/dummy_predict.png)
+
+Also we can go to `http://127.0.0.1:8000/docs` where an automatic OpenAPI is shown and we can test our endpoint from there:
+
+![openapi](img/openapi.png)
