@@ -2,7 +2,7 @@
     - [**High level spec**](#high-level-spec)
     - [**How to share your results?**](#how-to-share-your-results)
     - [**Evaluation:**](#evaluation)
-  - [Project Response](#short-project-response)
+  - [Short Project Response](#short-project-response)
   - [Project Response](#project-response)
     - [Create a development environment](#create-a-development-environment)
     - [Getting the requirements](#getting-the-requirements)
@@ -48,7 +48,7 @@ You should create 1 endpoint that accepts relevant input and returns the inferne
 
 ## Short Project Response
 
-This is a short version of the project response, as the longer one dives better into my though process and the steps I've been taking.
+This is a short version of the project response, as the longer one dives better into my thought process and the steps I've been taking.
 
 The dependencies needed for this project are:
 
@@ -59,8 +59,9 @@ The dependencies needed for this project are:
 First clone the project:
 
 ```
-git clone git@github.com:Gonmeso/interview-mlops
-git checkout  feature/Gonzalo-Interview-Submission
+git clone git@github.com:Gonmeso/interview-mlops-engineer-GM.git
+cd interview-mlops-engineer-GM
+git checkout feature/Gonzalo-Interview-Submission
 ```
 
 Create a virtual environment using pyenv or an existing installation of python:
@@ -74,6 +75,7 @@ pyenv install 3.8.12
 pyenv shell 3.8.12
 pip install virtualenv
 virtualenv .venv
+source .venv/bin/activate
 ```
 
 And now multiple helper scripts are provided:
@@ -81,11 +83,11 @@ And now multiple helper scripts are provided:
 * [run_all.sh](scripts/run_all.sh): Installs all the dependencies (development included), trains the model, runs the unit tests, builds the docker image, runs the integration tests and performs a load test to a container serving the API
 * [install_and_test.sh](scripts/install_and_test.sh): installs all the dependencies and executes the unit tests
 * [train_and_serve.sh](scripts/train_and_serve.sh): trains the model and serves it locally
-* [build_image.sh](scripts/build_image.sh): builds the docker image with an specific tag as an argument (`scripts/build_image.sh 0.0.1`)
-* [integration_tests.sh](scripts/integration_tests.sh): performs the integration tests, needs that `train_and_serve.sh` has beene xecuted once or that the training is executed manually with `python src/train.py`
+* [build_image.sh](scripts/build_image.sh): builds the docker image with a specific tag as an argument (`scripts/build_image.sh 0.0.1`)
+* [integration_tests.sh](scripts/integration_tests.sh): performs the integration tests, needs that `train_and_serve.sh` has been executed once or that the training is executed manually with `python src/train.py`
 * [load_test.sh](scripts/load_test.sh): performs the load test, runs a container, needs an existing model
 
-The execution of `run_all.sh` is preferred as it performs all the operations of the other scripts. Also `install_and_test.sh` and `train_and_serve.sh` should be executed once if `run_all.sh` is not run, this will install all the dependencies and train a model.
+The execution of `run_all.sh` is preferred as it performs all the operations of the other scripts. Also, `install_and_test.sh` and `train_and_serve.sh` should be executed once if `run_all.sh` is not run, this will install all the dependencies and train a model.
 
 The steps that I've followed for this are:
 
@@ -96,7 +98,7 @@ The steps that I've followed for this are:
 * Improve quality of the code
 * Test the code
 * Create an API using python's FastAPI framework with unit tests
-* Create a docker iamge for the API
+* Create a docker image for the API
 * Create integration tests that use our trained model
 * Create a load test to evaluate the performance
 
@@ -104,24 +106,24 @@ OpenApi specification can be found at [docs](docs).
 
 For more specific steps read [Project Response](#project-response).
 
-Thank you for the oportunity!
+Thank you for the opportunity!
 
 ## Project Response
 
 ### Create a development environment
 
-The first step is t have a look at the code a differentiate teh different parts involved in the whole process.
+The first step is to have a look at the code and observe the different parts involved in the whole process.
 
-As we can see the noteboook code is easily readeable and well documented with comments but misses a very important thing, the dependencies requirements. In order to make this fully reproducible whe need to asses this a pin the dependencies down.
+As we can see the notebook code is easily readable and well documented with comments but misses a very important thing, the dependencies requirements. In order to make this fully reproducible we need to assess this a pin the dependencies down.
 
-For this we are going to create a virtual environment and add a `.gitignore` so we don't add files that are not really needed (like de new environment). For our purpuose [this one](https://github.com/github/gitignore/blob/main/Python.gitignore) will be enough.
+For this we are going to create a virtual environment and add a `.gitignore` so we don't add files that are not really needed (like the new environment). For our purpose [this one](https://github.com/github/gitignore/blob/main/Python.gitignore) will be enough.
 
-Now with the environment. To create we will use `python 3.8` using `pyenv`, to install `pyenv` follow the instrunctions at it's [github page](https://github.com/pyenv/pyenv).
+Now with the environment. To create we will use `python 3.8` using `pyenv`, to install `pyenv` follow the instructions at its [github page](https://github.com/pyenv/pyenv).
 
 Download `python 3.8`:
 
 ```bash
-pyenv install 3.8.12 # If using and older version of pyenv It might ask you tu upgrade with a simple command
+pyenv install 3.8.12 # If using and older version of pyenv It might ask you to upgrade with a simple command
 ```
 
 Activate pyenv shell, this will make the new installed version usable in the shell:
@@ -137,7 +139,7 @@ python --version
 Create virtual environment:
 
 ```bash
-# Install viertualenv
+# Install virtualenv
 pip install virtualenv
 
 # Create new environment
@@ -161,13 +163,13 @@ import numpy as np
 from tensorflow import keras
 ```
 
-Mainly `tensorflow` and `numpy` (this one is a sub dependency of tensorflow). We could ask the author of the notebook the versions that were used in the development but lets assume that the latest versions were used, so lets install them.
+Mainly `tensorflow` and `numpy` (this one is a sub dependency of tensorflow). We could ask the author of the notebook the versions that were used in the development but let's assume that the latest versions were used, so let's install them.
 
 ```bash
 pip install tensorflow
 ```
 
-Now lets make this a little more reproducible by getting the exact versions and creating a `requirements_model.txt`:
+Now let's make this a little more reproducible by getting the exact versions and creating a `requirements_model.txt`:
 
 ```bash
 pip freeze | grep -E 'tensorflow=|keras|numpy' > requirements_model.txt
@@ -186,10 +188,10 @@ pip install -r requirements_model.txt
 
 ### Executing the code
 
-We have our environment, our dependencies, so now lets execute the code. For this we could follow different steps:
+We have our environment, our dependencies, so now let's execute the code. For this we could follow different steps:
 
-* Install `jupyter` launch the command `jupyter-notebook` open the ntebook and execute it.
-* Export the code to a `.py` file. We could do this using `nbconvert` or by hand and the executed with the python interpreter.
+* Install `jupyter`, launch the command `jupyter-notebook`, open the notebook and execute it.
+* Export the code to a `.py` file. We could do this using `nbconvert` or by hand and then executed with the python interpreter.
 
 #### Using Jupyter
 
@@ -199,7 +201,7 @@ Install jupyter:
 pip install jupyter
 ```
 
-With the environment activated (important) start the server and open it:
+Start the server and open it:
 
 ```bash
 jupyter-notebook
@@ -219,7 +221,7 @@ The prediction is made and the model is saved.
 
 #### Exporting it to py files
 
-We could use `nbconvert` but due to the low complexity we are going to doing by hand and we are going to divide this into to scripts `train.py` and `predict.py` that will help us in the future when testing. We'll create a python module (and create an `__init__.py` file) so we can import it later in the tests.
+We could use `nbconvert` but due to the low complexity we are going to do it by hand and we are going to divide this into scripts `train.py` and `predict.py` that will help us in the future when testing. We'll create a python module (and create an `__init__.py` file) so we can import it later in the tests.
 
 ```
 .
@@ -234,7 +236,7 @@ We could use `nbconvert` but due to the low complexity we are going to doing by 
     └── train.py
 ```
 
-For the training part we'll get the first three cells and for the prediction script we will use `from tensorflow.keras.models import load_model` as the other dependencies aare note needed for loading the model and giving predictions.
+For the training part we'll get the first three cells and for the prediction script we will use `from tensorflow.keras.models import load_model` as the other dependencies are not needed for loading the model and giving predictions.
 
 Now we have the code but getting them into two files does not easy its execution, now we need two calls for the whole process:
 
@@ -252,7 +254,7 @@ This in itself is not bad but we can improve it.
 
 Now the code is modular but we could improve it by using functions that make reusable pieces of code.
 
-For `train.py` we can observe that two main functionalities training and saving so lets create two reusable functions:
+For `train.py` we can observe that two main functionalities training and saving so let's create two reusable functions:
 
 ```python
 def train_model(optimizer='sgd', loss='mean_squared_error'):
@@ -280,7 +282,7 @@ Now we can execute it and create models with new names.
 
 ![new_model](img/new_model.png)
 
-Now the data is created inside the training function so lets add a new functin that creates data and the training function gets two new arguments to provide taht data:
+Now the data is created inside the training function so let's add a new function that creates data and the training function gets two new arguments to provide that data:
 
 ```python
 def get_data():
@@ -303,11 +305,11 @@ if __name__ == "__main__":
 
 Now we can modify the `get_data` in the case we needed to get the data from another source (locally, s3, database...) and feed it into the model.
 
-Lets use a bit of logging and add some new logs.
+let's use a bit of logging and add some new logs.
 
 ![logs](img/logs.png)
 
-As with the `train.py` script we can see two main functionalities in the `predict.py` script so lets create two functions and add logging as well.
+As with the `train.py` script we can see two main functionalities in the `predict.py` script so let's create two functions and add logging as well.
 
 ```python
 import logging
@@ -346,7 +348,7 @@ INFO-2022-04-26 20:17:00,644: Input: [10] Prediction: [[30.99669]]
 
 We have more modular code but we can improve the quality of it by adding code and docstring linting and formatting. We could do it manually but [pre-commit](https://pre-commit.com/) can handle it automatically for us with a simple configuration.
 
-Lets create a development requirements file, `requirements_dev.txt` and add `pre-commit` to it and install it.
+let's create a development requirements file, `requirements_dev.txt` and add `pre-commit` to it and install it.
 
 ```bash
 pip install -r requirements_dev.txt
@@ -389,13 +391,13 @@ repos:
           - -v 2
 ```
 
-This are the hooks we are going to use in every commit, `flake8` and `darglint` for linting, `black` and `isort` for formatting. The lets install the hooks:
+These are the hooks we are going to use in every commit, `flake8` and `darglint` for linting, `black` and `isort` for formatting. Install the hooks:
 
 ```bash
 pre-commit install
 ```
 
-And lets run all the files:
+And let's run all the files:
 
 ```bash
 pre-commit run --all-files
@@ -405,7 +407,7 @@ This will execute all the linting and formatting in all the files. From now on, 
 
 ![pre-commit](img/pre-commit-example.png)
 
-Now lets fix all the errors and add all the hooks to the `requirements_dev.txt` so we can used the tools indepently of having to commit a file. Also as we need this to develop we can add `requirements_model.txt` as a dependency soo by installing `requirements_dev.txt` we also install the dependencies needed for the project.
+Now let's fix all the errors and add all the hooks to the `requirements_dev.txt` so we can use the tools indepently of having to commit a file. Also, as we need this to develop we can add `requirements_model.txt` as a dependency soo by installing `requirements_dev.txt` we also install the dependencies needed for the project.
 
 ```
 -r requirements_model.txt
@@ -419,13 +421,13 @@ darglint==1.8.1
 pip install -r requirements_dev.txt
 ```
 
-We have better quality but code changes might break the training and prediction scripts so to make sure lets add tests for the training and prediction.
+We have better quality but code changes might break the training and prediction scripts so to make sure let's add tests for the training and prediction.
 
 ### Adding tests
 
 To make sure that further changes to the code don't break it we are going to add tests for both scripts. For this we install `pytest`, add it to `requirements_dev.txt`, create an empty `conftest.py` and a `tests` folder.
 
-Then we will create two scripts one for `train.py` as `test_train.py` and one for `predict.py` as `test_predict.py`.
+Then we will create two scripts, one for `train.py` as `test_train.py` and one for `predict.py` as `test_predict.py`.
 
 An example for the `get_data` function at `train.py`:
 
@@ -437,7 +439,7 @@ from src import train
 def test_get_data():
 
     """
-    This should test the `get_data` function returns an a tuple with numpy arrays
+    This should test the `get_data` function returns a tuple with numpy arrays
     """
 
     result = train.get_data()
@@ -449,36 +451,36 @@ def test_get_data():
 
 ```
 
-Because we made a module the scripts are easy to import and test that they are working properly. Now we add the test for the remaining functions. Some functions perform a simple action likea loading a model so the tests we are going to add are simple but for more complex code this would test that any of the logic inside the function continues to work.
+Because we made a module the scripts are easy to import and test that they are working properly. Now we add the test for the remaining functions. Some functions perform a simple action like loading a model so the tests we are going to add are simple but for more complex code this would test that any of the logic inside the function continues to work.
 
-Now that the are some tests we can execute them with the command `pytest`:
+Now that there are some tests we can execute them with the command `pytest`:
 
 ![tests](img/tests.png)
 
-Now we have improved our code a bit so lets start with the Rest API to perform predictions.
+Now we have improved our code a bit so let's start with the Rest API to perform predictions.
 
 ### Creating the Rest API
 
-For this we have to select a framework in this case [FastAPI](https://fastapi.tiangolo.com/) is my choice to develop the Rest API as I fell more confortable with it but que could have choosen `Flask` or `Django-REST`. FastAPi have some advantages like data validation out of the box, OpenAPI support or good performance.
+For this we have to select a framework in this case [FastAPI](https://fastapi.tiangolo.com/) is my choice to develop the Rest API as I feel more comfortable with it but que could have chosen `Flask` or `Django-REST`. FastAPi has some advantages like data validation out of the box, OpenAPI support or good performance.
 
-To keep everything in order lets create an `app.py` file where all the logic of the API is going to be developed.
+To keep everything in order let's create an `app.py` file where all the logic of the API is going to be developed.
 
 
 When creating the API we have to consider a couple of things:
 
-* When will be the model loaded?
+* When will the model be loaded?
 * Shape of the input data
 * What do we need to log?
 
-For the first question we should not load the model for each prediction as it will result in slow predictions so we should load when the applciation starts and keep it cached. With FastAPI whe can perform the loading of the model before the application fully loads so this will be handy in dealing  with the model caching and improve the performance as the model is already in memory for each prediction.
+For the first question we should not load the model for each prediction as it will result in slow predictions so we should load when the application starts and keep it cached. With FastAPI whe can perform the loading of the model before the application fully loads so this will be handy in dealing with the model caching and improve the performance as the model is already in memory for each prediction.
 
 FastAPI is based on [Pydantic](https://pydantic-docs.helpmanual.io/) this allows for good performance in serialization and deserialization, also it performs the data validation for us so if a prediction does not have the desired schema a 422 HTTP Error will be thrown.
 
-It is of interest to log the input data and the output predictions, this will allow as to measure our model performance in the long run. This oculd be directly logged into the stdout or a file for our purpuose it will be logged into stdout.
+It is of interest to log the input data and the output predictions, this will allow us to measure our model performance in the long run. This could be directly logged into the stdout or a file for our purpose it will be logged into stdout.
 
 As we selected FastAPI we need to install it and add it into our `requirements_model.txt`.
 
-Lets create a simple app:
+let's create a simple app:
 
 ```python
 from fastapi import FastAPI
@@ -490,7 +492,7 @@ def predict():
     return {"data": 30}
 ```
 
-We have a single `predict` endpoint thath when requested always returns a dummy prediction. Lets run it, we could use the basic FastAPI application startup but lets improve it by using `uvicorn` as it is production ready.
+We have a single `predict` endpoint that when requested always returns a dummy prediction. Let's run it, we could use the basic FastAPI application startup but let's improve it by using `uvicorn` as it is production ready.
 
 ```bash
 # Install uvicorn and add it to the requirements
@@ -504,11 +506,11 @@ We can see that the application has started and if we go to the web browser to `
 
 ![dummy_predict](img/dummy_predict.png)
 
-Also we can go to `http://127.0.0.1:8000/docs` where an automatic OpenAPI is shown and we can test our endpoint from there:
+Also, we can go to `http://127.0.0.1:8000/docs` where an automatic OpenAPI is shown and we can test our endpoint from there:
 
 ![openapi](img/openapi.png)
 
-We have our endpoint working, lets try to load a model before the application starts and make a prediction:
+We have our endpoint working, let's try to load a model before the application starts and make a prediction:
 
 ```python
 from typing import List
@@ -533,9 +535,9 @@ def predict_model(data: InputData):
     return ResponseData(prediction=predict(data.data, model).flatten().tolist())
 ```
 
-Lets unpack what happening here:
+let's unpack what happening here:
 
-* We created `InputData` this class uses `pydantic` to create the schema using python typing, this will be how we spect the data to come, we will have a field `data` with a list of integers in it. If the request does not follows this schemas a validation error will be raised. This will be an  argument in our endpoint function that its expected to cme in the body of the request.
+* We created `InputData`, this class uses `pydantic` to create the schema using python typing, this will be how we expect the data to come, we will have a field `data` with a list of integers in it. If the request does not follow this schema a validation error will be raised. This will be an argument in our endpoint function that it's expected to come in the body of the request.
 
 ```json
 {
@@ -553,13 +555,13 @@ Lets unpack what happening here:
 
 * Now its when creating the `predict.py` comes in handy as we can reuse the code to load the model. This instance is shared across the application and fully cached in memory to reduce prediction times.
 
-* And finally we change the endpoint to a POST so it can accept a body and make the prediction using the previous developed function at `predict.py`.
+* And finally we change the endpoint to a POST so it can accept a body and make the prediction using the previously developed function at `predict.py`.
 
-Now lets clean a bit the code and add a bit of documentation, add some tests and create a configuration file for the app.
+Now let's clean a bit the code and add a bit of documentation, add some tests and create a configuration file for the app.
 
-Now we have a configuration to share across the API in `src/config`, this allows us to configurate the service using `.env` files and environment variables.
+Now we have a configuration to share across the API in `src/config`, this allows us to configure the service using `.env` files and environment variables.
 
-Also the `openapi.json` can be found at `docs/` as a [markdown](docs/openapi.md) and as a [json](docs/openapi.json). But it can be easily recovered serving the API and going into `http://localhost:8000/docs`.
+Also, the `openapi.json` can be found at `docs/` as a [markdown](docs/openapi.md) and as a [json](docs/openapi.json). But it can be easily recovered by serving the API and going into `http://localhost:8000/docs`.
 
 The next step is to ease the deployment for this service, for this we will use [Docker](https://www.docker.com/) to containerize the service so we can deploy it wherever docker is running.
 
@@ -569,7 +571,7 @@ Using the `Dockerfile` we can build an image:
 docker build . -t service-mlops:0.0.1
 ```
 
-And the run it adding the desired model as a volume and exposing the port 8000:
+And then run it using the desired model as a volume and exposing the port 8000:
 
 ```bash
 docker run -it --rm -p 8000:8000 -v $PWD/my_best_model.h5:/opt/app/model.h5 -e MODEL_PATH=model.h5 service-mlops:0.0.1
@@ -577,19 +579,19 @@ docker run -it --rm -p 8000:8000 -v $PWD/my_best_model.h5:/opt/app/model.h5 -e M
 
 So now the service is running in a docker container and we can still go to the web browser at `localhost:8000/docs` and see that our service is up.
 
-Something that can be really improved is the model loading, right now we need it to exists in our current working environment and attatch it to the running container, we should use an external registry to download it at runtime like an Artifactory or even an object storage like S3.
+Something that can be really improved is the model loading, right now we need it to exist in our current working environment and attach it to the running container, we should use an external registry to download it at runtime like an Artifactory or even an object storage like S3.
 
 ### Testing the containerized API
 
-As we created a `Dockerfile` to ease the deployment now we have to test that everything works as expected. For this we are going to create a couple of integration tests que a container will serve the trained model and we will automatically test that the container successfully returns predections or the expected errors.
+As we created a `Dockerfile` to ease the deployment now we have to test that everything works as expected. For this we are going to create a couple of integration tests using a container that will serve the trained model and we will automatically test that the container successfully returns predictions or the expected errors.
 
-For this we will need `Docker` tunning and python's `docker` module, so lets install it and add it to `requirements_dev.txt`:
+For this we will need `Docker` tuning and python's `docker` module, so let's install it and add it to `requirements_dev.txt`:
 
 ```bash
 pip install docker==5.0.3
 ```
 
-With this dependency we can programatically run a container, test on it and the remove it after the tests are finished. For this we are going to use a `pytest.fixture` to make it available across the testing session:
+With this dependency we can programatically run a container, test on it and then remove it after the tests are finished. For this we are going to use a `pytest.fixture` to make it available across the testing session:
 
 ```python
 @pytest.fixture(scope="session")
@@ -627,7 +629,7 @@ def api_container():
     container.kill()
 ```
 
-Now we can tests against the API using that running container:
+Now we can test against the API using that running container:
 
 ```python
 def test_api_model_loaded(api_container):
@@ -647,7 +649,7 @@ But we want to perform a request with our trained model and check that the predi
 def test_api_prediction_one_item(api_container):
 
     """
-    Should check that the API retunrs a prediction of one item
+    Should check that the API returns a prediction of one item
     """
 
     response = requests.post(f"{URL}/predict", json={"data": [10]})
@@ -659,15 +661,15 @@ def test_api_prediction_one_item(api_container):
     assert isinstance(prediction_response["prediction"][0], float)
 ```
 
-Lets add some more tests:
+let's add some more tests:
 
 ![test_it](img/test_it.png)
 
 ### Check the performance of our service
 
-We have our Rest API serving the model and making predictions but waht response times do we have? How many request per second do we have? Aproximately how many users could call the API?
+We have our Rest API serving the model and making predictions but what response times do we have? How many requests per second can we handle? Approximately how many users could call the API?
 
-To aproximatelly give a response to this questions we can perform a simple load test using [locust](https://locust.io/). So again, lets add it to our dependencies and install it:
+To approximately give a response to these questions we can perform a simple load test using [locust](https://locust.io/). So again, let's add it to our dependencies and install it:
 
 ```
 pip install locust==2.8.6
@@ -687,7 +689,7 @@ spawn-rate = 1
 run-time = 2m
 ```
 
-Here we specify the locust file that has the logic, variuous csv outputs, the host and the configuration for the run, we will be having twenty concurrent users, spawning 1 each second and a total runtime of two minutes. Now the logic:
+Here we specify the locust file that has the logic, various csv outputs, the host and the configuration for the run, we will be having twenty concurrent users, spawning 1 each second and a total runtime of two minutes. Now the logic:
 
 ```python
 import random
@@ -725,7 +727,7 @@ class APIUser(HttpUser):
 
 Here we create a simple user that makes a simple task, makes a POST request to the `/predict` endpoint using a list of four generated numbers.
 
-Now lets start the container:
+Now let's start the container:
 
 ```
 docker run -it --rm -p 8000:8000 -v $PWD/my_new_best_model.h5:/opt/app/model.h5 -e MODEL_PATH=model.h5 service-mlops:0.0.1
@@ -747,7 +749,7 @@ All the result files are commited into the project [here](load_test/)!
 * Upload the trained model to an external source so it can be downloaded at runtime in the container
 * Loading the model from an external source, model registry or storage like S3
 * Store the data in a file
-* Create an snapshot of the data before training and save it in an external storage
+* Create a snapshot of the data before training and save it in an external storage
 * Improve container by using [Gunicorn + Uvicorn Tiangolo's docker image](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker) (If used as standalone container and not in an orchestrator)
 * Push the docker image to a docker registry like DockerHub
 * Add CI to perform the tests, the image building and pushing
@@ -756,6 +758,6 @@ All the result files are commited into the project [here](load_test/)!
 
 ### Acknowledgments
 
-I want to thank Adidas and all the staff involved for this oportunity.
+I want to thank Adidas and all the staff involved for this opportunity.
 
 Thank you!

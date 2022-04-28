@@ -4,6 +4,7 @@ darglint==1.8.1
 docker==5.0.3
 flake8==3.8.3
 isort==5.6.4
+locust==2.8.6
 pre-commit==2.18.1
 pytest==7.1.2
 requests==2.27.1
