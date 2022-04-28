@@ -14,7 +14,8 @@ def test_prediction_ok():
     response = client.post("/predict", json={"data": [10]})
 
     assert response.status_code == 200
-    assert isinstance(response.json()["prediction"], float)
+    assert isinstance(response.json()["prediction"], list)
+    assert isinstance(response.json()["prediction"][0], float)
 
 
 def test_malformed_body():

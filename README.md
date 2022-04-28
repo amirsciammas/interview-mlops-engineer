@@ -1,17 +1,8 @@
-# MLOps Engineer Interview Project
-
-### **High level spec**
-
-Data Scientist team created a Jupyter notebook `My Best Model.ipynb` that contains all the code to train, save, load and inference.
-Your task is to create a REST API in python that serves the model and allows for online inference.
-You should create 1 endpoint that accepts relevant input and returns the infernece results to the client.
-
------
-
 - [MLOps Engineer Interview Project](#mlops-engineer-interview-project)
     - [**High level spec**](#high-level-spec)
     - [**How to share your results?**](#how-to-share-your-results)
     - [**Evaluation:**](#evaluation)
+  - [Project Response](#short-project-response)
   - [Project Response](#project-response)
     - [Create a development environment](#create-a-development-environment)
     - [Getting the requirements](#getting-the-requirements)
@@ -27,23 +18,93 @@ You should create 1 endpoint that accepts relevant input and returns the inferne
     - [Next Steps](#next-steps)
     - [Acknowledgments](#acknowledgments)
 
+# MLOps Engineer Interview Project
+
+### **High level spec**
+
+Data Scientist team created a Jupyter notebook `My Best Model.ipynb` that contains all the code to train, save, load and inference.
+Your task is to create a REST API in python that serves the model and allows for online inference.
+You should create 1 endpoint that accepts relevant input and returns the infernece results to the client.
+
+-----
+
 
 ### **How to share your results?**
 - [X] Clone this repository and create your own branch to work on.
 - [X] .... develop .....
-- [ ] Once you are ready, create a pull request with your code.
+- [X] Once you are ready, create a pull request with your code.
 
 
 ### **Evaluation:**
-- [ ] There should be **at least** one test written and the README file should include instructions on how to execute it.
-- [ ] You should provide clear documentation of the API, you can use Swagger or any other format.
-- [ ] README file should include clear instructions on how to deploy / start the application.
-- [ ] No crashes or bugs.
-- [ ] Code is easily understood and communicative (eg. comments, variable names, etc).
-- [ ] Everything that you decide to not do due to the limitation of time should be documented in the README.
-- [ ] GitHub commit history is consistent, easy to follow and understand.
+- [x] There should be **at least** one test written and the README file should include instructions on how to execute it.
+- [x] You should provide clear documentation of the API, you can use Swagger or any other format.
+- [x] README file should include clear instructions on how to deploy / start the application.
+- [x] No crashes or bugs.
+- [x] Code is easily understood and communicative (eg. comments, variable names, etc).
+- [x] Everything that you decide to not do due to the limitation of time should be documented in the README.
+- [x] GitHub commit history is consistent, easy to follow and understand.
 
 -----
+
+## Short Project Response
+
+This is a short version of the project response, as the longer one dives better into my though process and the steps I've been taking.
+
+The dependencies needed for this project are:
+
+* git to clone the project
+* pyenv or an existing installation of python 3.8
+* Docker
+
+First clone the project:
+
+```
+git clone git@github.com:Gonmeso/interview-mlops
+git checkout  feature/Gonzalo-Interview-Submission
+```
+
+Create a virtual environment using pyenv or an existing installation of python:
+
+```
+python3.8 -m virtualenv .venv
+
+# or
+
+pyenv install 3.8.12
+pyenv shell 3.8.12
+pip install virtualenv
+virtualenv .venv
+```
+
+And now multiple helper scripts are provided:
+
+* [run_all.sh](scripts/run_all.sh): Installs all the dependencies (development included), trains the model, runs the unit tests, builds the docker image, runs the integration tests and performs a load test to a container serving the API
+* [install_and_test.sh](scripts/install_and_test.sh): installs all the dependencies and executes the unit tests
+* [train_and_serve.sh](scripts/train_and_serve.sh): trains the model and serves it locally
+* [build_image.sh](scripts/build_image.sh): builds the docker image with an specific tag as an argument (`scripts/build_image.sh 0.0.1`)
+* [integration_tests.sh](scripts/integration_tests.sh): performs the integration tests, needs that `train_and_serve.sh` has beene xecuted once or that the training is executed manually with `python src/train.py`
+* [load_test.sh](scripts/load_test.sh): performs the load test, runs a container, needs an existing model
+
+The execution of `run_all.sh` is preferred as it performs all the operations of the other scripts. Also `install_and_test.sh` and `train_and_serve.sh` should be executed once if `run_all.sh` is not run, this will install all the dependencies and train a model.
+
+The steps that I've followed for this are:
+
+* Create an isolated environment (virtualenv)
+* Look for the dependencies
+* Extract the code to `.py` files
+* Make more reusable code
+* Improve quality of the code
+* Test the code
+* Create an API using python's FastAPI framework with unit tests
+* Create a docker iamge for the API
+* Create integration tests that use our trained model
+* Create a load test to evaluate the performance
+
+OpenApi specification can be found at [docs](docs).
+
+For more specific steps read [Project Response](#project-response).
+
+Thank you for the oportunity!
 
 ## Project Response
 
