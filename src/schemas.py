@@ -22,8 +22,8 @@ class ResponseData(BaseModel):
     Represents the response to the `predict` endpoint
     """
 
-    prediction: float
+    prediction: List[float]
 
     # Add example schema for OpenAPI
     class Config:
-        schema_extra = {"prediction": 30.102}
+        schema_extra = {"prediction": [30.102]}

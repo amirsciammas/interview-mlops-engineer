@@ -39,4 +39,6 @@ def predict_model(data: InputData):
     Returns:
         The predictions made by the model
     """
-    return ResponseData(prediction=predict(data.data, model).item(0))
+    return ResponseData(
+        prediction=predict(data.data, model).flatten().tolist()
+    )  # noqa: E501
