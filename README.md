@@ -440,7 +440,7 @@ class InputData(BaseModel):
     data: List[int]
 
 class ResponseData(BaseModel):
-    prediction: float
+    prediction: List[float]
 
 model = load_keras_model("my_best_model.h5")
 
@@ -449,7 +449,7 @@ app = FastAPI()
 @app.post("/predict", status_code=200, response_model=ResponseData)
 def predict_model(data: InputData):
 
-    return ResponseData(prediction=predict(data.data, model).item(0))
+    return ResponseData(prediction=predict(data.data, model).flatten().tolist())
 ```
 
 Lets unpack what happening here:
@@ -466,7 +466,7 @@ Lets unpack what happening here:
 
 ```json
 {
-    "prediction": 30.012
+    "prediction": [30.012]
 }
 ```
 
@@ -477,6 +477,8 @@ Lets unpack what happening here:
 Now lets clean a bit the code and add a bit of documentation, add some tests and create a configuration file for the app.
 
 Now we have a configuration to share across the API in `src/config`, this allows us to configurate the service using `.env` files and environment variables.
+
+Also the `openapi.json` can be found at `docs/` as a [markdown](docs/openapi.md) and as a [json](docs/openapi.json). But it can be easily recovered serving the API and going into `http://localhost:8000/docs`.
 
 The next step is to ease the deployment for this service, for this we will use [Docker](https://www.docker.com/) to containerize the service so we can deploy it wherever docker is running.
 
@@ -580,9 +582,91 @@ Lets add some more tests:
 
 ![test_it](img/test_it.png)
 
+### Check the performance of our service
+
+We have our Rest API serving the model and making predictions but waht response times do we have? How many request per second do we have? Aproximately how many users could call the API?
+
+To aproximatelly give a response to this questions we can perform a simple load test using [locust](https://locust.io/). So again, lets add it to our dependencies and install it:
+
+```
+pip install locust==2.8.6
+```
+
+Now we need to create a directory `load_test`which will have the locust configuration files, the locust files and the outputs. The configuration file looks like the following:
+
+```
+locustfile = load_test/locust_test.py
+headless = true
+csv = load_test/csv/load_test
+csv-full-history = true
+html = load_test/report.html
+host = http://localhost:8000
+users = 20
+spawn-rate = 1
+run-time = 2m
+```
+
+Here we specify the locust file that has the logic, variuous csv outputs, the host and the configuration for the run, we will be having twenty concurrent users, spawning 1 each second and a total runtime of two minutes. Now the logic:
+
+```python
+import random
+from typing import List
+
+from locust import HttpUser, constant, task
+
+
+class APIUser(HttpUser):
+
+    """
+    Basic user looking for predictions
+    """
+
+    wait_time = constant(1)
+    @task()
+    def get_prediction(self) -> None:
+
+        """
+        Prediction request
+        """
+
+        data = {"data": self._generate_random_data()}
+        self.client.post(url="/predict", json=data, stream=True)
+
+    def _generate_random_data(self) -> List:
+        """
+        Generate 4 float numbers for iris predictions.
+
+        Returns:
+            A list of 4 integers between 1 and 20
+        """
+        return [random.randrange(1, 20) for _ in range(4)]
+```
+
+Here we create a simple user that makes a simple task, makes a POST request to the `/predict` endpoint using a list of four generated numbers.
+
+Now lets start the container:
+
+```
+docker run -it --rm -p 8000:8000 -v $PWD/my_new_best_model.h5:/opt/app/model.h5 -e MODEL_PATH=model.h5 service-mlops:0.0.1
+```
+
+And run the load test:
+
+```
+locust --config load_test/load_test.conf
+```
+
+One finished we can open the report at `load_test/report.html` and see the results:
+
+![load_test](img/load_test.png)
+
+All the result files are commited into the project [here](load_test/)!
 ### Next Steps
-* Loading the model from another source, S3 for example
-* Getting data from another source
-* Analyse using VDC
-* Use Gunicorn + Uvicorn Tiangolo's docker image
-* If the model is small enough an latency is not that important evaluate the usage of AWS Lambda and use AWS SAM
+
+* Upload the trained model to an external source so it can be downloaded at runtime in the container
+* Loading the model from an external source, model registry or storage like S3
+* Store the data in a file
+* Create an snapshot of the data before training and save it in an external storage
+* Improve container by using [Gunicorn + Uvicorn Tiangolo's docker image](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker) (If used as standalone container and not in an orchestrator)
+* Deploy the container (EC2 + docker, ECS, Heroku, Droplets...)
+* Store metadata like where is the data used to train, parameters used in fitting the model, where the model is saved, code commit used to train the model...
