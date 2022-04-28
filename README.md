@@ -8,6 +8,26 @@ You should create 1 endpoint that accepts relevant input and returns the inferne
 
 -----
 
+- [MLOps Engineer Interview Project](#mlops-engineer-interview-project)
+    - [**High level spec**](#high-level-spec)
+    - [**How to share your results?**](#how-to-share-your-results)
+    - [**Evaluation:**](#evaluation)
+  - [Project Response](#project-response)
+    - [Create a development environment](#create-a-development-environment)
+    - [Getting the requirements](#getting-the-requirements)
+    - [Executing the code](#executing-the-code)
+      - [Using Jupyter](#using-jupyter)
+      - [Exporting it to py files](#exporting-it-to-py-files)
+    - [Improving the code](#improving-the-code)
+    - [Improving Quality](#improving-quality)
+    - [Adding tests](#adding-tests)
+    - [Creating the Rest API](#creating-the-rest-api)
+    - [Testing the containerized API](#testing-the-containerized-api)
+    - [Check the performance of our service](#check-the-performance-of-our-service)
+    - [Next Steps](#next-steps)
+    - [Acknowledgments](#acknowledgments)
+
+
 ### **How to share your results?**
 - [X] Clone this repository and create your own branch to work on.
 - [X] .... develop .....
@@ -668,5 +688,13 @@ All the result files are commited into the project [here](load_test/)!
 * Store the data in a file
 * Create an snapshot of the data before training and save it in an external storage
 * Improve container by using [Gunicorn + Uvicorn Tiangolo's docker image](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker) (If used as standalone container and not in an orchestrator)
+* Push the docker image to a docker registry like DockerHub
+* Add CI to perform the tests, the image building and pushing
 * Deploy the container (EC2 + docker, ECS, Heroku, Droplets...)
 * Store metadata like where is the data used to train, parameters used in fitting the model, where the model is saved, code commit used to train the model...
+
+### Acknowledgments
+
+I want to thank Adidas and all the staff involved for this oportunity.
+
+Thank you!
