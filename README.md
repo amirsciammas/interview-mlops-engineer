@@ -496,6 +496,89 @@ So now the service is running in a docker container and we can still go to the w
 
 Something that can be really improved is the model loading, right now we need it to exists in our current working environment and attatch it to the running container, we should use an external registry to download it at runtime like an Artifactory or even an object storage like S3.
 
+### Testing the containerized API
+
+As we created a `Dockerfile` to ease the deployment now we have to test that everything works as expected. For this we are going to create a couple of integration tests que a container will serve the trained model and we will automatically test that the container successfully returns predections or the expected errors.
+
+For this we will need `Docker` tunning and python's `docker` module, so lets install it and add it to `requirements_dev.txt`:
+
+```bash
+pip install docker==5.0.3
+```
+
+With this dependency we can programatically run a container, test on it and the remove it after the tests are finished. For this we are going to use a `pytest.fixture` to make it available across the testing session:
+
+```python
+@pytest.fixture(scope="session")
+def api_container():
+
+    """
+    Create a fixture to use a container of the API for the integration tests
+
+    Yields:
+        The running API container.
+    """
+
+    client = docker.from_env()
+    root_path = os.path.abspath(".")
+    # Run the container at port 8000, the image should exist beforehand
+    # We could build it before the tests but the tests would take much longer
+    container = client.containers.run(
+        image="service-mlops:0.0.1",
+        auto_remove=True,
+        detach=True,
+        environment={
+            "MODEL_PATH": "model.h5"
+        },
+        ports={
+            "8000/tcp": 8000
+        },
+        volumes=[f"{root_path}/my_new_best_model.h5:/opt/app/model.h5"],
+    )
+
+    # Call `/status` to check that the API is up
+    wait_for_api()
+    yield container
+
+    # Remove after the tests
+    container.kill()
+```
+
+Now we can tests against the API using that running container:
+
+```python
+def test_api_model_loaded(api_container):
+
+    """
+    Should check that the model has been loaded correctly
+    """
+
+    assert "Trainable params: 2" in api_container.logs().decode()
+```
+
+Here we look at the logs and check that the model has been correctly loaded by looking at the summary.
+
+But we want to perform a request with our trained model and check that the predictions are returned correctly:
+
+```python
+def test_api_prediction_one_item(api_container):
+
+    """
+    Should check that the API retunrs a prediction of one item
+    """
+
+    response = requests.post(f"{URL}/predict", json={"data": [10]})
+    prediction_response = response.json()
+
+    assert response.status_code == 200
+    assert "prediction" in prediction_response
+    assert isinstance(prediction_response["prediction"], list)
+    assert isinstance(prediction_response["prediction"][0], float)
+```
+
+Lets add some more tests:
+
+![test_it](img/test_it.png)
 
 ### Next Steps
 * Loading the model from another source, S3 for example

@@ -27,6 +27,19 @@ app = FastAPI(
 
 
 # Prediction endpoint
+@app.get("/status", status_code=200)
+def status():
+    """
+    Healthcheck for the API
+
+    \f
+    Returns:
+        A 200 OK
+    """
+    return {"status": "UP"}
+
+
+# Prediction endpoint
 @app.post("/predict", status_code=200, response_model=ResponseData)
 def predict_model(data: InputData):
     """
