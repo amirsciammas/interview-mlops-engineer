@@ -475,3 +475,31 @@ Lets unpack what happening here:
 * And finally we change the endpoint to a POST so it can accept a body and make the prediction using the previous developed function at `predict.py`.
 
 Now lets clean a bit the code and add a bit of documentation, add some tests and create a configuration file for the app.
+
+Now we have a configuration to share across the API in `src/config`, this allows us to configurate the service using `.env` files and environment variables.
+
+The next step is to ease the deployment for this service, for this we will use [Docker](https://www.docker.com/) to containerize the service so we can deploy it wherever docker is running.
+
+Using the `Dockerfile` we can build an image:
+
+```bash
+docker build . -t service-mlops:0.0.1
+```
+
+And the run it adding the desired model as a volume and exposing the port 8000:
+
+```bash
+docker run -it --rm -p 8000:8000 -v $PWD/my_best_model.h5:/opt/app/model.h5 -e MODEL_PATH=model.h5 service-mlops:0.0.1
+```
+
+So now the service is running in a docker container and we can still go to the web browser at `localhost:8000/docs` and see that our service is up.
+
+Something that can be really improved is the model loading, right now we need it to exists in our current working environment and attatch it to the running container, we should use an external registry to download it at runtime like an Artifactory or even an object storage like S3.
+
+
+### Next Steps
+* Loading the model from another source, S3 for example
+* Getting data from another source
+* Analyse using VDC
+* Use Gunicorn + Uvicorn Tiangolo's docker image
+* If the model is small enough an latency is not that important evaluate the usage of AWS Lambda and use AWS SAM
